@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - FurniCraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #E67E22;
+            --accent-color: #ECF0F1;
+            --text-color: #2C3E50;
+            --background-color: #F8F9FA;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-info {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--secondary-color);
+        }
+
+        .nav-link i {
+            width: 20px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        /* Product Form Styles */
+        .product-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .image-preview {
+            width: 200px;
+            height: 200px;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .submit-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #d35400;
+        }
+
+        /* Product List Styles */
+        .product-list {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-table th,
+        .product-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-table th {
+            background: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .delete-btn {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .alert-error {
+            background: var(--error-color);
+            color: white;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Orders Styles */
+        .order-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #f1c40f;
+            color: #fff;
+        }
+
+        .status-processing {
+            background: #3498db;
+            color: #fff;
+        }
+
+        .status-shipped {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .status-delivered {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .status-cancelled {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        /* Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .analytics-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .analytics-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Settings Styles */
+        .settings-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--secondary-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 500;
+        }
+
+        .setting-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+                <div class="admin-info">Welcome, Admin</div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" onclick="showSection('products')">
+                        <i class="fas fa-box"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('orders')">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('customers')">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('analytics')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('settings')">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Products Section -->
+            <div id="products" class="content-section active">
+                <div class="page-header">
+                    <h1 class="page-title">Product Management</h1>
+                    <button class="submit-btn" onclick="showAddProductForm()">Add New Product</button>
+                </div>
+
+                <!-- Add/Edit Product Form -->
+                <div class="product-form" id="productForm" style="display: none;">
+                    <h2 id="formTitle">Add New Product</h2>
+                    <form id="addProductForm" onsubmit="handleProductSubmit(event)">
+                        <div class="form-group">
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" name="productName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Price ($)</label>
+                            <input type="number" id="productPrice" name="productPrice" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productCategory">Category</label>
+                            <select id="productCategory" name="productCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="living-room">Living Room</option>
+                                <option value="bedroom">Bedroom</option>
+                                <option value="dining-room">Dining Room</option>
+                                <option value="office">Office</option>
+                                <option value="outdoor">Outdoor</option>
+                                <option value="kids-room">Kids Room</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">Description</label>
+                            <textarea id="productDescription" name="productDescription" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="productImageUrl">Product Image URL</label>
+                            <input type="url" id="productImageUrl" name="productImageUrl" required 
+                                   placeholder="https://example.com/image.jpg" onchange="previewImageUrl(event)">
+                            <div class="image-preview" id="imagePreview">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-btn">Save Product</button>
+                    </form>
+                </div>
+
+                <!-- Product List -->
+                <div class="product-list">
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody">
+                            <!-- Products will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Orders Section -->
+            <div id="orders" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Order Management</h1>
+                </div>
+                <div class="product-list">
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderTableBody">
+                            <!-- Orders will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customers Section -->
+            <div id="customers" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Customer Management</h1>
+                </div>
+                <div class="product-list">
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Orders</th>
+                                <th>Total Spent</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                            <!-- Customers will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Analytics Dashboard</h1>
+                </div>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Total Sales</h3>
+                        <div class="analytics-value" id="totalSales">$0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Total Orders</h3>
+                        <div class="analytics-value" id="totalOrders">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Total Customers</h3>
+                        <div class="analytics-value" id="totalCustomers">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Average Order Value</h3>
+                        <div class="analytics-value" id="averageOrderValue">$0</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Settings</h1>
+                </div>
+                <div class="settings-section">
+                    <h3>Admin Profile</h3>
+                    <form id="adminProfileForm" onsubmit="updateAdminProfile(event)">
+                        <div class="form-group">
+                            <label for="adminName">Admin Name</label>
+                            <input type="text" id="adminName" name="adminName" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Save Profile</button>
+                    </form>
+                </div>
+                <div class="settings-section">
+                    <h3>General Settings</h3>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Maintenance Mode</div>
+                            <div class="setting-description">Enable to temporarily disable the store</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="maintenanceMode" onchange="updateSetting('maintenanceMode', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Email Notifications</div>
+                            <div class="setting-description">Receive email notifications for new orders</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="emailNotifications" onchange="updateSetting('emailNotifications', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Store Information</h3>
+                    <form id="storeInfoForm" onsubmit="updateStoreInfo(event)">
+                        <div class="form-group">
+                            <label for="storeName">Store Name</label>
+                            <input type="text" id="storeName" name="storeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="storeEmail">Store Email</label>
+                            <input type="email" id="storeEmail" name="storeEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="storePhone">Store Phone</label>
+                            <input type="tel" id="storePhone" name="storePhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="storeAddress">Store Address</label>
+                            <textarea id="storeAddress" name="storeAddress" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is admin
+        function checkAdminAuth() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || !currentUser.isAdmin) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Initialize admin panel
+        function initAdminPanel() {
+            checkAdminAuth();
+            loadProducts();
+            
+            // Set initial admin name in sidebar
+            const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            document.querySelector('.admin-info').textContent = `Welcome, ${currentUser.name || 'Admin'}`;
+        }
+
+        // Show add product form
+        function showAddProductForm() {
+            const form = document.getElementById('productForm');
+            form.style.display = 'block';
+            document.getElementById('formTitle').textContent = 'Add New Product';
+            document.getElementById('addProductForm').reset();
+            document.getElementById('imagePreview').innerHTML = '<i class="fas fa-image"></i>';
+        }
+
+        // Preview image from URL
+        function previewImageUrl(event) {
+            const preview = document.getElementById('imagePreview');
+            const imageUrl = event.target.value;
+            
+            if (imageUrl) {
+                preview.innerHTML = `<img src="${imageUrl}" alt="Preview" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x200?text=Invalid+Image+URL';">`;
+            } else {
+                preview.innerHTML = '<i class="fas fa-image"></i>';
+            }
+        }
+
+        // Handle product form submission
+        function handleProductSubmit(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const product = {
+                id: Date.now(),
+                name: formData.get('productName'),
+                price: parseFloat(formData.get('productPrice')),
+                category: formData.get('productCategory'),
+                description: formData.get('productDescription'),
+                image: formData.get('productImageUrl')
+            };
+
+            // Save product to localStorage
+            let products = JSON.parse(localStorage.getItem('products')) || [];
+            products.push(product);
+            localStorage.setItem('products', JSON.stringify(products));
+
+            // Show success message
+            alert('Product added successfully!');
+            
+            // Reset form and hide it
+            event.target.reset();
+            document.getElementById('productForm').style.display = 'none';
+            document.getElementById('imagePreview').innerHTML = '<i class="fas fa-image"></i>';
+            
+            // Reload products
+            loadProducts();
+        }
+
+        // Load products
+        function loadProducts() {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const tableBody = document.getElementById('productTableBody');
+            
+            tableBody.innerHTML = products.map(product => `
+                <tr>
+                    <td>
+                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                    </td>
+                    <td>${product.name}</td>
+                    <td>$${product.price.toFixed(2)}</td>
+                    <td>${product.category}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editProduct(${product.id})">Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Edit product
+        function editProduct(id) {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const product = products.find(p => p.id === id);
+            
+            if (product) {
+                document.getElementById('productForm').style.display = 'block';
+                document.getElementById('formTitle').textContent = 'Edit Product';
+                
+                // Fill form with product data
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productCategory').value = product.category;
+                document.getElementById('productDescription').value = product.description;
+                document.getElementById('productImageUrl').value = product.image;
+                document.getElementById('imagePreview').innerHTML = `<img src="${product.image}" alt="Preview" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x200?text=Invalid+Image+URL';">`;
+            }
+        }
+
+        // Delete product
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                let products = JSON.parse(localStorage.getItem('products')) || [];
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('products', JSON.stringify(products));
+                loadProducts();
+            }
+        }
+
+        // Show selected section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked nav link
+            event.currentTarget.classList.add('active');
+            
+            // Load section data
+            switch(sectionId) {
+                case 'orders':
+                    loadOrders();
+                    break;
+                case 'customers':
+                    loadCustomers();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        // Load Orders
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const tableBody = document.getElementById('orderTableBody');
+            
+            tableBody.innerHTML = orders.map(order => `
+                <tr>
+                    <td>#${order.id}</td>
+                    <td>${order.customerName}</td>
+                    <td>${new Date(order.date).toLocaleDateString()}</td>
+                    <td>$${order.total.toFixed(2)}</td>
+                    <td>
+                        <span class="order-status status-${order.status.toLowerCase()}">
+                            ${order.status}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="updateOrderStatus(${order.id})">Update Status</button>
+                        <button class="action-btn delete-btn" onclick="deleteOrder(${order.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load Customers
+        function loadCustomers() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const tableBody = document.getElementById('customerTableBody');
+            
+            const customers = users.filter(user => !user.isAdmin).map(user => {
+                const userOrders = orders.filter(order => order.customerId === user.id);
+                const totalSpent = userOrders.reduce((sum, order) => sum + order.total, 0);
+                
+                return {
+                    ...user,
+                    orderCount: userOrders.length,
+                    totalSpent
+                };
+            });
+            
+            tableBody.innerHTML = customers.map(customer => `
+                <tr>
+                    <td>#${customer.id}</td>
+                    <td>${customer.name}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.orderCount}</td>
+                    <td>$${customer.totalSpent.toFixed(2)}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="viewCustomerDetails(${customer.id})">View Details</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load Analytics
+        function loadAnalytics() {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Calculate analytics
+            const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
+            const totalOrders = orders.length;
+            const totalCustomers = users.filter(user => !user.isAdmin).length;
+            const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
+            
+            // Update analytics cards
+            document.getElementById('totalSales').textContent = `$${totalSales.toFixed(2)}`;
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalCustomers').textContent = totalCustomers;
+            document.getElementById('averageOrderValue').textContent = `$${averageOrderValue.toFixed(2)}`;
+            
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            const salesData = getLast7DaysSales(orders);
+            
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: salesData.labels,
+                    datasets: [{
+                        label: 'Daily Sales',
+                        data: salesData.values,
+                        borderColor: '#E67E22',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Sales Last 7 Days'
+                        }
+                    }
+                }
+            });
+            
+            // Category Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            const categoryData = getCategoryDistribution(products);
+            
+            new Chart(categoryCtx, {
+                type: 'pie',
+                data: {
+                    labels: categoryData.labels,
+                    datasets: [{
+                        data: categoryData.values,
+                        backgroundColor: [
+                            '#E67E22',
+                            '#3498db',
+                            '#2ecc71',
+                            '#e74c3c',
+                            '#9b59b6',
+                            '#f1c40f'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Products by Category'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load Settings
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('settings')) || {
+                maintenanceMode: false,
+                emailNotifications: true,
+                storeName: 'FurniCraft',
+                storeEmail: 'info@furnicraft.com',
+                storePhone: '(555) 123-4567',
+                storeAddress: '123 Furniture Street, Design City, DC 12345'
+            };
+            
+            // Load admin name from current user
+            const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            document.getElementById('adminName').value = currentUser.name || 'Admin';
+            
+            // Update form values
+            document.getElementById('maintenanceMode').checked = settings.maintenanceMode;
+            document.getElementById('emailNotifications').checked = settings.emailNotifications;
+            document.getElementById('storeName').value = settings.storeName;
+            document.getElementById('storeEmail').value = settings.storeEmail;
+            document.getElementById('storePhone').value = settings.storePhone;
+            document.getElementById('storeAddress').value = settings.storeAddress;
+        }
+
+        // Helper Functions
+        function getLast7DaysSales(orders) {
+            const labels = [];
+            const values = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toLocaleDateString();
+                labels.push(dateStr);
+                
+                const dayOrders = orders.filter(order => 
+                    new Date(order.date).toLocaleDateString() === dateStr
+                );
+                const dayTotal = dayOrders.reduce((sum, order) => sum + order.total, 0);
+                values.push(dayTotal);
+            }
+            
+            return { labels, values };
+        }
+
+        function getCategoryDistribution(products) {
+            const categories = {};
+            
+            products.forEach(product => {
+                categories[product.category] = (categories[product.category] || 0) + 1;
+            });
+            
+            return {
+                labels: Object.keys(categories),
+                values: Object.values(categories)
+            };
+        }
+
+        // Update Settings
+        function updateSetting(setting, value) {
+            const settings = JSON.parse(localStorage.getItem('settings')) || {};
+            settings[setting] = value;
+            localStorage.setItem('settings', JSON.stringify(settings));
+        }
+
+        function updateStoreInfo(event) {
+            event.preventDefault();
+            
+            const settings = {
+                storeName: document.getElementById('storeName').value,
+                storeEmail: document.getElementById('storeEmail').value,
+                storePhone: document.getElementById('storePhone').value,
+                storeAddress: document.getElementById('storeAddress').value
+            };
+            
+            localStorage.setItem('settings', JSON.stringify(settings));
+            alert('Store information updated successfully!');
+        }
+
+        // Order Management
+        function updateOrderStatus(orderId) {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const order = orders.find(o => o.id === orderId);
+            
+            if (order) {
+                const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+                const currentIndex = statuses.indexOf(order.status);
+                const nextIndex = (currentIndex + 1) % statuses.length;
+                
+                order.status = statuses[nextIndex];
+                localStorage.setItem('orders', JSON.stringify(orders));
+                loadOrders();
+            }
+        }
+
+        function deleteOrder(orderId) {
+            if (confirm('Are you sure you want to delete this order?')) {
+                let orders = JSON.parse(localStorage.getItem('orders')) || [];
+                orders = orders.filter(o => o.id !== orderId);
+                localStorage.setItem('orders', JSON.stringify(orders));
+                loadOrders();
+            }
+        }
+
+        // Customer Management
+        function viewCustomerDetails(customerId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            
+            const customer = users.find(u => u.id === customerId);
+            const customerOrders = orders.filter(o => o.customerId === customerId);
+            
+            if (customer) {
+                alert(`
+                    Customer Details:
+                    Name: ${customer.name}
+                    Email: ${customer.email}
+                    Total Orders: ${customerOrders.length}
+                    Total Spent: $${customerOrders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
+                `);
+            }
+        }
+
+        // Update Admin Profile
+        function updateAdminProfile(event) {
+            event.preventDefault();
+            
+            const newName = document.getElementById('adminName').value;
+            const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            
+            // Update current user
+            currentUser.name = newName;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Update users array
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex].name = newName;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            
+            // Update sidebar
+            document.querySelector('.admin-info').textContent = `Welcome, ${newName}`;
+            
+            alert('Admin profile updated successfully!');
+        }
+
+        // Initialize admin panel
+        window.onload = function() {
+            initAdminPanel();
+            loadSettings();
+        };
+    </script>
+</body>
+</html> 

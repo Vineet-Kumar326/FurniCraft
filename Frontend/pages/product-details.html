@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - FurniCraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #E67E22;
+            --accent-color: #ECF0F1;
+            --text-color: #2C3E50;
+            --background-color: #F8F9FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .product-details {
+            max-width: 1200px;
+            margin: 100px auto 50px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .product-images {
+            position: relative;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .thumbnail:hover {
+            opacity: 0.8;
+        }
+
+        .wishlist-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .wishlist-button:hover {
+            transform: scale(1.1);
+        }
+
+        .wishlist-button i {
+            font-size: 1.5rem;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .wishlist-button:hover i {
+            color: #ff4d4d;
+        }
+
+        .wishlist-button.active i {
+            color: #ff4d4d;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .product-specs {
+            margin-bottom: 30px;
+        }
+
+        .spec-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .spec-label {
+            font-weight: 500;
+            width: 150px;
+        }
+
+        .spec-value {
+            color: #666;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .quantity-btn {
+            background: var(--accent-color);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .add-to-cart-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #d35400;
+        }
+
+        .buy-now-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        .buy-now-btn:hover {
+            background: #1a252f;
+        }
+
+        @media (max-width: 768px) {
+            .product-details {
+                grid-template-columns: 1fr;
+                margin-top: 80px;
+            }
+
+            .main-image {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="product-details">
+        <div class="product-images">
+            <img src="" alt="" class="main-image" id="mainImage">
+            <button class="wishlist-button" onclick="toggleWishlist()">
+                <i class="far fa-heart"></i>
+            </button>
+            <div class="thumbnail-container" id="thumbnailContainer">
+                <!-- Thumbnails will be added dynamically -->
+            </div>
+        </div>
+        <div class="product-info">
+            <h1 class="product-title" id="productTitle"></h1>
+            <p class="product-price" id="productPrice"></p>
+            <p class="product-description" id="productDescription"></p>
+            <div class="product-specs" id="productSpecs">
+                <!-- Specs will be added dynamically -->
+            </div>
+            <div class="quantity-selector">
+                <button class="quantity-btn" onclick="updateQuantity(-1)">-</button>
+                <input type="number" class="quantity-input" id="quantity" value="1" min="1" readonly>
+                <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
+            </div>
+            <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+            <button class="buy-now-btn" onclick="buyNow()">Buy Now</button>
+        </div>
+    </div>
+
+    <script>
+        // Product data (in a real application, this would come from a database)
+        const products = {
+            'modern-sofa': {
+                name: 'Modern Sofa',
+                price: 899,
+                description: 'Premium fabric sofa with wooden legs. Perfect for modern living rooms. Features high-quality upholstery and sturdy construction.',
+                specs: {
+                    'Dimensions': '84"W x 35"D x 31"H',
+                    'Material': 'Premium Fabric, Wood',
+                    'Color': 'Gray',
+                    'Weight Capacity': '600 lbs',
+                    'Assembly': 'Required'
+                },
+                images: [
+                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3'
+                ]
+            },
+            'wooden-table': {
+                name: 'Wooden Table',
+                price: 599,
+                description: 'Elegant wooden dining table with a natural finish. Perfect for family gatherings and dinner parties. Features a durable construction and timeless design.',
+                specs: {
+                    'Dimensions': '72"W x 36"D x 30"H',
+                    'Material': 'Solid Oak Wood',
+                    'Color': 'Natural Oak',
+                    'Seating Capacity': '6-8 people',
+                    'Assembly': 'Required'
+                },
+                images: [
+                    'https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3'
+                ]
+            },
+            'dining-chairs': {
+                name: 'Dining Chairs',
+                price: 299,
+                description: 'Set of 4 modern dining chairs with comfortable cushioning. Features a sleek design that complements any dining table.',
+                specs: {
+                    'Dimensions': '18"W x 20"D x 36"H',
+                    'Material': 'Wood, Fabric',
+                    'Color': 'Black',
+                    'Set Includes': '4 chairs',
+                    'Assembly': 'Minimal'
+                },
+                images: [
+                    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3'
+                ]
+            },
+            'office-desk': {
+                name: 'Office Desk',
+                price: 449,
+                description: 'Modern office desk with ample storage space. Features a spacious work surface and built-in cable management.',
+                specs: {
+                    'Dimensions': '60"W x 30"D x 30"H',
+                    'Material': 'Engineered Wood, Metal',
+                    'Color': 'White',
+                    'Storage': '2 drawers',
+                    'Assembly': 'Required'
+                },
+                images: [
+                    'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3'
+                ]
+            },
+            'outdoor-sofa': {
+                name: 'Outdoor Sofa',
+                price: 799,
+                description: 'Weather-resistant outdoor sofa perfect for patios and gardens. Features UV-resistant fabric and rust-proof frame.',
+                specs: {
+                    'Dimensions': '78"W x 32"D x 30"H',
+                    'Material': 'Weather-resistant Fabric, Aluminum',
+                    'Color': 'Beige',
+                    'Weight Capacity': '500 lbs',
+                    'Assembly': 'Required'
+                },
+                images: [
+                    'https://images.unsplash.com/photo-1600210492493-0946911123ea?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3'
+                ]
+            },
+            'bookshelf': {
+                name: 'Bookshelf',
+                price: 349,
+                description: 'Modern bookshelf with adjustable shelves. Perfect for displaying books, decorative items, and storage.',
+                specs: {
+                    'Dimensions': '36"W x 12"D x 72"H',
+                    'Material': 'Engineered Wood',
+                    'Color': 'Walnut',
+                    'Shelves': '5 adjustable',
+                    'Assembly': 'Required'
+                },
+                images: [
+                    'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3'
+                ]
+            },
+            'coffee-table': {
+                name: 'Coffee Table',
+                price: 249,
+                description: 'Stylish coffee table with a glass top and wooden frame. Perfect for living rooms and lounges.',
+                specs: {
+                    'Dimensions': '48"W x 24"D x 18"H',
+                    'Material': 'Glass, Wood',
+                    'Color': 'Clear Glass, Dark Wood',
+                    'Weight Capacity': '100 lbs',
+                    'Assembly': 'Required'
+                },
+                images: [
+                    'https://images.unsplash.com/photo-1577140917170-285929fb55b7?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3'
+                ]
+            },
+            'tv-stand': {
+                name: 'TV Stand',
+                price: 399,
+                description: 'Modern TV stand with cable management and storage space. Features a sleek design and ample storage.',
+                specs: {
+                    'Dimensions': '60"W x 20"D x 24"H',
+                    'Material': 'Engineered Wood, Metal',
+                    'Color': 'Black',
+                    'Storage': '2 cabinets, 2 shelves',
+                    'Assembly': 'Required'
+                },
+                images: [
+                    'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3',
+                    'https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3'
+                ]
+            }
+        };
+
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        const product = products[productId];
+
+        if (product) {
+            // Update page title
+            document.title = `${product.name} - FurniCraft`;
+
+            // Update product details
+            document.getElementById('productTitle').textContent = product.name;
+            document.getElementById('productPrice').textContent = `$${product.price}`;
+            document.getElementById('productDescription').textContent = product.description;
+
+            // Update main image
+            document.getElementById('mainImage').src = product.images[0];
+            document.getElementById('mainImage').alt = product.name;
+
+            // Add thumbnails
+            const thumbnailContainer = document.getElementById('thumbnailContainer');
+            product.images.forEach(image => {
+                const thumbnail = document.createElement('img');
+                thumbnail.src = image;
+                thumbnail.alt = product.name;
+                thumbnail.className = 'thumbnail';
+                thumbnail.onclick = () => document.getElementById('mainImage').src = image;
+                thumbnailContainer.appendChild(thumbnail);
+            });
+
+            // Add specifications
+            const specsContainer = document.getElementById('productSpecs');
+            for (const [label, value] of Object.entries(product.specs)) {
+                const specItem = document.createElement('div');
+                specItem.className = 'spec-item';
+                specItem.innerHTML = `
+                    <span class="spec-label">${label}:</span>
+                    <span class="spec-value">${value}</span>
+                `;
+                specsContainer.appendChild(specItem);
+            }
+        }
+
+        // Quantity functions
+        function updateQuantity(change) {
+            const input = document.getElementById('quantity');
+            const newValue = Math.max(1, parseInt(input.value) + change);
+            input.value = newValue;
+        }
+
+        // Wishlist functions
+        function toggleWishlist() {
+            const button = document.querySelector('.wishlist-button');
+            const icon = button.querySelector('i');
+            
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.classList.add('active');
+                // Add to wishlist
+                addToWishlist();
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.classList.remove('active');
+                // Remove from wishlist
+                removeFromWishlist();
+            }
+        }
+
+        function addToWishlist() {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            if (!wishlist.some(item => item.id === productId)) {
+                wishlist.push({
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    image: product.images[0]
+                });
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            }
+        }
+
+        function removeFromWishlist() {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            wishlist = wishlist.filter(item => item.id !== productId);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+
+        // Cart functions
+        function addToCart() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    image: product.images[0],
+                    quantity: quantity
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert('Added to cart!');
+        }
+
+        function buyNow() {
+            addToCart();
+            window.location.href = 'checkout.html';
+        }
+
+        // Initialize wishlist button state
+        window.onload = function() {
+            const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            if (wishlist.some(item => item.id === productId)) {
+                const button = document.querySelector('.wishlist-button');
+                const icon = button.querySelector('i');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.classList.add('active');
+            }
+        };
+    </script>
+</body>
+</html> 

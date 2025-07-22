@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - FurniCraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #E67E22;
+            --accent-color: #ECF0F1;
+            --text-color: #2C3E50;
+            --background-color: #F8F9FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .orders-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .orders-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .order-filters {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .order-header {
+            padding: 1.5rem;
+            background: var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .order-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-delivered {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .status-processing {
+            background: #f1c40f;
+            color: white;
+        }
+
+        .status-cancelled {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .order-items {
+            padding: 1.5rem;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .item-quantity {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .order-summary {
+            padding: 1.5rem;
+            background: var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-total {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .track-btn {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .track-btn:hover {
+            background: #d35400;
+        }
+
+        .cancel-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            .orders-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .order-filters {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+
+            .order-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .order-summary {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .order-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orders-container">
+        <div class="orders-header">
+            <h1 class="orders-title">Order History</h1>
+            <div class="order-filters">
+                <button class="filter-btn active">All Orders</button>
+                <button class="filter-btn">Processing</button>
+                <button class="filter-btn">Delivered</button>
+                <button class="filter-btn">Cancelled</button>
+            </div>
+        </div>
+
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-info">
+                    <h3>Order #12345</h3>
+                    <p class="order-date">March 15, 2024</p>
+                </div>
+                <span class="order-status status-delivered">Delivered</span>
+            </div>
+            <div class="order-items">
+                <div class="order-item">
+                    <div class="item-image">
+                        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3" alt="Modern Sofa">
+                    </div>
+                    <div class="item-details">
+                        <h4 class="item-name">Modern Sofa</h4>
+                        <p class="item-price">$899</p>
+                        <p class="item-quantity">Quantity: 1</p>
+                    </div>
+                </div>
+                <div class="order-item">
+                    <div class="item-image">
+                        <img src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3" alt="Coffee Table">
+                    </div>
+                    <div class="item-details">
+                        <h4 class="item-name">Coffee Table</h4>
+                        <p class="item-price">$249</p>
+                        <p class="item-quantity">Quantity: 1</p>
+                    </div>
+                </div>
+            </div>
+            <div class="order-summary">
+                <div class="order-total">Total: $1,148</div>
+                <div class="order-actions">
+                    <button class="action-btn track-btn">Track Order</button>
+                    <button class="action-btn cancel-btn">Request Return</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-info">
+                    <h3>Order #12344</h3>
+                    <p class="order-date">March 10, 2024</p>
+                </div>
+                <span class="order-status status-processing">Processing</span>
+            </div>
+            <div class="order-items">
+                <div class="order-item">
+                    <div class="item-image">
+                        <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?ixlib=rb-4.0.3" alt="Wooden Table">
+                    </div>
+                    <div class="item-details">
+                        <h4 class="item-name">Wooden Table</h4>
+                        <p class="item-price">$599</p>
+                        <p class="item-quantity">Quantity: 1</p>
+                    </div>
+                </div>
+            </div>
+            <div class="order-summary">
+                <div class="order-total">Total: $599</div>
+                <div class="order-actions">
+                    <button class="action-btn track-btn">Track Order</button>
+                    <button class="action-btn cancel-btn">Cancel Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter buttons functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                // Here you would typically filter the orders based on the selected status
+            });
+        });
+
+        // Track order functionality
+        const trackButtons = document.querySelectorAll('.track-btn');
+        trackButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const orderNumber = button.closest('.order-card').querySelector('.order-info h3').textContent;
+                // Here you would typically redirect to the tracking page or show a tracking modal
+                alert(`Tracking order ${orderNumber}`);
+            });
+        });
+
+        // Cancel/Return order functionality
+        const cancelButtons = document.querySelectorAll('.cancel-btn');
+        cancelButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const orderNumber = button.closest('.order-card').querySelector('.order-info h3').textContent;
+                const action = button.textContent.toLowerCase();
+                // Here you would typically show a confirmation modal
+                if (confirm(`Are you sure you want to ${action} ${orderNumber}?`)) {
+                    alert(`Order ${orderNumber} ${action} request submitted`);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FurniCraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #E67E22;
+            --accent-color: #ECF0F1;
+            --text-color: #2C3E50;
+            --background-color: #F8F9FA;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #d35400;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .form-footer a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .alert-success {
+            background: var(--success-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Welcome Back</h1>
+            <p>Please login to your account</p>
+        </div>
+        
+        <div class="alert alert-error" id="errorAlert"></div>
+        <div class="alert alert-success" id="successAlert"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="submit-btn">Login</button>
+        </form>
+
+        <div class="form-footer">
+            <p>Don't have an account? <a href="register.html">Register</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Handle login form submission
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Get users from localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Find user
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                // Store current user in localStorage
+                localStorage.setItem('currentUser', JSON.stringify({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    isAdmin: user.isAdmin || false
+                }));
+
+                // Show success message
+                const successAlert = document.getElementById('successAlert');
+                successAlert.textContent = 'Login successful! Redirecting...';
+                successAlert.style.display = 'block';
+
+                // Redirect based on user role
+                setTimeout(() => {
+                    if (user.isAdmin) {
+                        window.location.href = 'admin-panel.html';
+                    } else {
+                        window.location.href = '../index.html';
+                    }
+                }, 1500);
+            } else {
+                // Show error message
+                const errorAlert = document.getElementById('errorAlert');
+                errorAlert.textContent = 'Invalid email or password';
+                errorAlert.style.display = 'block';
+            }
+        }
+
+        // Create default admin user if not exists
+        function createDefaultAdmin() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Check if admin user exists
+            const adminExists = users.some(user => user.isAdmin);
+            
+            if (!adminExists) {
+                // Create default admin user
+                const adminUser = {
+                    id: Date.now(),
+                    name: 'Admin User',
+                    email: 'admin@furnicraft.com',
+                    password: 'admin123',
+                    isAdmin: true
+                };
+                
+                users.push(adminUser);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+
+        // Initialize
+        createDefaultAdmin();
+    </script>
+</body>
+</html> 
